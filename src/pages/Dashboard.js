@@ -10,14 +10,12 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import PeopleIcon from '@material-ui/icons/People';
 import { mainListItems } from './../components/listItems';
 
 import Auth from './../components/Auth';
@@ -118,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard(props) {
   const classes = useStyles();
 
-  const { web3 } = props;
+  const { web3, spaceClient } = props;
 
   const [open, setOpen] = useState(true);
   const handleDrawerOpen = () => setOpen(true);
@@ -142,19 +140,15 @@ export default function Dashboard(props) {
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             Mobility Marketplace
           </Typography>
-          <IconButton>
-            <Badge color="secondary">
-              <PeopleIcon/>
-
-              {
-                web3 && (
-                  <div>
-                    <Auth web3={web3} />
-                  </div>
-                )
-              }
-            </Badge>
-          </IconButton>
+          <div>
+            {
+              web3 && (
+                <div>
+                  <Auth web3={web3} spaceClient={spaceClient} />
+                </div>
+              )
+            }
+          </div>
         </Toolbar>
       </AppBar>
       <Drawer
