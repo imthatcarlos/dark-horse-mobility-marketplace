@@ -1,24 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
-import Box from '@material-ui/core/Box';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
+import {
+  CssBaseline,
+  Drawer,
+  Box,
+  AppBar,
+  Toolbar,
+  List,
+  Typography,
+  Divider,
+  IconButton,
+  Container,
+  Grid,
+  Paper,
+  Link
+} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems } from './../components/listItems';
 
 import Auth from './../components/Auth';
+import Datasets from './../components/Datasets';
+import CreateAd from './../components/CreateAd';
+import Title from '../components/Title';
+import { KEYS_NAMES } from './../utils/fleekStorage';
 
 function Copyright() {
   return (
@@ -119,9 +125,30 @@ export default function Dashboard(props) {
   const { web3, spaceClient } = props;
 
   const [open, setOpen] = useState(true);
+  const [content, setContent] = useState(null);
+  const [adForm, setAdForm] = useState(false);
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const handleSetContent = (c) => { setContent(c) };
+
+  const datasetContent = () => (
+    <React.Fragment style={{ textAlign: 'left' }}>
+      <Title>Metadata for {KEYS_NAMES[content.key]}</Title>
+      <br/>
+      <Grid container spacing={2}>
+        {
+          Object.keys(content.meta).map((m) => (
+            <Grid item xs={12} key={m}>
+              <Typography component="p" variant="h6">
+                { m } => { content.meta[m] }
+              </Typography>
+            </Grid>
+          ))
+        }
+      </Grid>
+    </React.Fragment>
+  );
 
   return (
     <div className={classes.root}>
@@ -173,19 +200,21 @@ export default function Dashboard(props) {
             {/* Chart */}
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={fixedHeightPaper}>
-                hey
+                <Datasets props={props} setContent={handleSetContent} />
               </Paper>
             </Grid>
             {/* Recent Deposits */}
             <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
-                hi
+                <CreateAd props={props} setAdForm={setAdForm} />
               </Paper>
             </Grid>
             {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                hello
+                {
+                  content && datasetContent()
+                }
               </Paper>
             </Grid>
           </Grid>
