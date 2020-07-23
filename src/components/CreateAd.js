@@ -15,6 +15,7 @@ import {
 import Title from './Title';
 
 import { SPACE } from './../utils/spaceDaemon';
+import { uploadedAd } from './../utils/fleekStorage';
 
 const CATEGORIES = ['mobility', 'fashion', 'sports', 'coffee'];
 const COUNTRIES = ['United States', 'Italy', 'France', 'Spain'];
@@ -37,24 +38,44 @@ export default function CreateAd(props) {
   const handleClose = () => { setAnchorEl(null); setOpenModal(false); }
   const inputOrg = useRef();
   const inputTitle = useRef();
-  const inputDescription = useRef();
+  const inputBudget = useRef();
   const inputFile = useRef();
   const [inputCategory, setInputCategory] = useState('');
 
-  const createAd = async () => {
+  // NO LONGER USING SPACE DAEMON TO UPLOAD ASSETS
+  const createAd = () => new Promise((resolve, reject) => {
     try {
-      console.log(inputFile.current.files[0].name);
-      return;
-      const res = await spaceClient.addItems({ slug: `${SPACE}/profile` });
-      const bucket = res.getBucket();
+      const reader = new FileReader();
+      reader.addEventListener('load', async (event) => {
+        try {
+          const ipfsHash = await uploadedAd({
+            account: web3.coinbase,
+            data: event.target.result,
+            key: `${inputOrg.current.value}-${inputTitle.current.value}`
+          });
 
-      console.log(bucket.getName());
+          await web3.mobilityCampaigns.createCampaign(
+            inputOrg.current,
+            inputCategory,
+            inputTitle.current,
+            ipfsHash,
+            { from: web3.coinbase.toLowerCase(), value: web3.utils.toWei('0.1') }
+          );
 
-      setOpenModal(false);
+          setOpenModal(false);
+
+          resolve();
+        } catch (error) {
+          console.log(error);
+          reject();
+        }
+      });
+      reader.readAsDataURL(inputFile.current.files[0]);
     } catch (error) {
       console.log(error);
+      reject();
     }
-  };
+  });
 
   const createProfilePopover = () => {
     return (
@@ -103,7 +124,7 @@ export default function CreateAd(props) {
                    style={{ minWidth: 160 }}
                 >
                   {
-                    CATEGORIES.map((c) => <MenuItem value={c}>{c}</MenuItem>)
+                    CATEGORIES.map((c) => <MenuItem value={c} key={c}>{c}</MenuItem>)
                   }
                 </Select>
               </Grid>
@@ -118,15 +139,19 @@ export default function CreateAd(props) {
                   onChange={e => inputTitle.current.value = e.target.value}
                  />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <TextField
                   error={error !== null}
+                  type="number"
                   helperText={error}
-                  id="ad-desc"
-                  label="Description"
-                  ref={inputDescription}
-                  onChange={e => inputDescription.current.value = e.target.value}
+                  id="ad-budget"
+                  label="Budget"
+                  ref={inputBudget}
+                  onChange={e => inputBudget.current.value = e.target.value}
                  />
+              </Grid>
+              <Grid item xs={2}>
+                <InputLabel style={{ paddingTop: '85%' }} id="profile-category">ETH</InputLabel>
               </Grid>
               <Grid item xs={6}>
                 <input

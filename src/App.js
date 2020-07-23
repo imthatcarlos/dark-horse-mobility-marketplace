@@ -7,6 +7,7 @@ import logo from './logo.svg';
 import './App.css';
 import Dashboard from './pages/Dashboard';
 import { getWeb3 } from './utils/getWeb3';
+import { getContracts } from './utils/getContracts';
 
 function App() {
   const [web3, setWeb3] = useState(null);
@@ -26,7 +27,12 @@ function App() {
   useEffect(() => {
     if (web3 === null) {
       const fetchWeb3 = async () => {
-        setWeb3(await getWeb3());
+        const web3 = await getWeb3();
+        const contracts = await getContracts(web3);
+        setWeb3({
+          ...web3,
+          ...contracts
+        });
       };
 
       fetchWeb3();

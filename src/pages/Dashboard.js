@@ -200,13 +200,24 @@ export default function Dashboard(props) {
             {/* Chart */}
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={fixedHeightPaper}>
-                <Datasets props={props} setContent={handleSetContent} />
+                <Datasets
+                  spaceClient={spaceClient}
+                  setContent={handleSetContent}
+                />
               </Paper>
             </Grid>
             {/* Recent Deposits */}
             <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
-                <CreateAd props={props} setAdForm={setAdForm} />
+                {
+                  web3 && (
+                    <CreateAd
+                      web3={web3}
+                      spaceClient={spaceClient}
+                      setAdForm={setAdForm}
+                    />
+                  )
+                }
               </Paper>
             </Grid>
             {/* Recent Orders */}

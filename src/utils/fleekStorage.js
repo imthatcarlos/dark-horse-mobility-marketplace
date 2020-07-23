@@ -6,7 +6,8 @@ const {
 } = process.env;
 
 const BUCKET = 'hackfs-dark-horse-bucket';
-const DATA_DIRECTORY = 'MDS-trips/';
+const DATA_DIRECTORY = 'MDS-trips';
+const ADS_DIRECTORY = 'mobility-ads';
 
 const ICONS_KEYS = {
   'santa-barbara': 'media/datasets/santa-monica.png',
@@ -65,3 +66,18 @@ export const getMedia = (keys) => Promise.all(keys.map((k) => new Promise(async 
     key: k
   });
 })));
+
+export const uploadedAd = async ({ account, key, data }) => {
+  try {
+    const res = await fleekStorage.upload({
+      apiKey: REACT_APP_FLEEK_API_KEY,
+      apiSecret: REACT_APP_FLEEK_API_SECRET,
+      key: `${ADS_DIRECTORY}/${account}/${key}`,
+      data
+    });
+
+    return res.hash;
+  } catch (error) {
+    return null;
+  }
+};
