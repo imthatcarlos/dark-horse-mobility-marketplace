@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 });
 
 export default function CreateAd(props) {
-  const { web3, spaceClient } = props;
+  const { web3, spaceClient, mAdsClient } = props;
 
   const classes = useStyles();
   const [openModal, setOpenModal] = useState(false);
@@ -54,12 +54,12 @@ export default function CreateAd(props) {
             key: `${inputOrg.current.value}-${inputTitle.current.value}`
           });
 
-          await web3.mobilityCampaigns.createCampaign(
-            inputOrg.current,
+          await mAdsClient.createCampaign(
+            inputOrg.current.value,
             inputCategory,
-            inputTitle.current,
+            inputTitle.current.value,
             ipfsHash,
-            { from: web3.coinbase.toLowerCase(), value: web3.utils.toWei('0.1') }
+            0.1
           );
 
           setOpenModal(false);

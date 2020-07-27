@@ -8,9 +8,11 @@ import './App.css';
 import Dashboard from './pages/Dashboard';
 import { getWeb3 } from './utils/getWeb3';
 import { getContracts } from './utils/getContracts';
+import MobilityAdsClient from './MobilityAdsClient_advertiser';
 
-function App() {
+function App(props) {
   const [web3, setWeb3] = useState(null);
+  const [mAdsClient, setMAdsClient] = useState(null);
   // default port exposed by the daemon for client connection is 9998
   const spaceClient = new SpaceClient({
     url: `http://0.0.0.0:9998`,
@@ -29,6 +31,13 @@ function App() {
       const fetchWeb3 = async () => {
         const web3 = await getWeb3();
         const contracts = await getContracts(web3);
+
+        setMAdsClient(new MobilityAdsClient({
+          web3,
+          account: web3.coinbase,
+          contract: contracts.mobilityCampaigns
+        }));
+
         setWeb3({
           ...web3,
           ...contracts
@@ -43,7 +52,11 @@ function App() {
     <div className="App">
       <ThemeProvider theme={theme}>
         <CssBaseline/>
-        <Dashboard web3={web3} spaceClient={spaceClient} />
+        <Dashboard
+          web3={web3}
+          spaceClient={spaceClient}
+          mAdsClient={mAdsClient}
+        />
       </ThemeProvider>
     </div>
   );

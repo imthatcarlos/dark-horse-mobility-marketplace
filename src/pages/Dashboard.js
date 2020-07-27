@@ -18,13 +18,16 @@ import {
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { mainListItems } from './../components/listItems';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from "react-router-dom";
 
 import Auth from './../components/Auth';
-import Datasets from './../components/Datasets';
-import CreateAd from './../components/CreateAd';
-import Title from '../components/Title';
-import { KEYS_NAMES } from './../utils/fleekStorage';
+import Links from './../components/Links';
+import DashboardView from './DashboardView';
+import Campaigns from './Campaigns';
 
 function Copyright() {
   return (
@@ -121,34 +124,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard(props) {
   const classes = useStyles();
-
-  const { web3, spaceClient } = props;
+  const { web3, spaceClient, mAdsClient } = props;
 
   const [open, setOpen] = useState(true);
-  const [content, setContent] = useState(null);
-  const [adForm, setAdForm] = useState(false);
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const handleSetContent = (c) => { setContent(c) };
-
-  const datasetContent = () => (
-    <React.Fragment style={{ textAlign: 'left' }}>
-      <Title>Metadata for {KEYS_NAMES[content.key]}</Title>
-      <br/>
-      <Grid container spacing={2}>
-        {
-          Object.keys(content.meta).map((m) => (
-            <Grid item xs={12} key={m}>
-              <Typography component="p" variant="h6">
-                { m } => { content.meta[m] }
-              </Typography>
-            </Grid>
-          ))
-        }
-      </Grid>
-    </React.Fragment>
-  );
 
   return (
     <div className={classes.root}>
@@ -178,62 +158,39 @@ export default function Dashboard(props) {
           </div>
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>{mainListItems}</List>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <Datasets
-                  spaceClient={spaceClient}
-                  setContent={handleSetContent}
-                />
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                {
-                  web3 && (
-                    <CreateAd
-                      web3={web3}
-                      spaceClient={spaceClient}
-                      setAdForm={setAdForm}
-                    />
-                  )
-                }
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                {
-                  content && datasetContent()
-                }
-              </Paper>
-            </Grid>
-          </Grid>
-          <Box pt={4}>
-            <Copyright />
-          </Box>
-        </Container>
-      </main>
+      <Router>
+        <Drawer
+          variant="permanent"
+          classes={{
+            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+          }}
+          open={open}
+        >
+          <div className={classes.toolbarIcon}>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          <Divider />
+          <List>{Links}</List>
+        </Drawer>
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            <Switch>
+              <Route exact path="/">
+                <DashboardView { ...props } />
+              </Route>
+              <Route exact path="/campaigns">
+                <Campaigns { ...props } />
+              </Route>
+            </Switch>
+            <Box pt={4}>
+              <Copyright />
+            </Box>
+          </Container>
+        </main>
+      </Router>
     </div>
   );
 }

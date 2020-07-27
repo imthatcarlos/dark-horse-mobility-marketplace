@@ -14,7 +14,7 @@ export const getWeb3 = () => new Promise((resolve, reject) => {
     var web3;
 
     // Modern dapp browsers...
-    if (window.ethereum) {
+    if (process.env.NODE_ENV !== 'development' && window.ethereum) {
       web3 = new Web3(window.ethereum);
       try {
         // Request account access if needed
@@ -42,7 +42,7 @@ export const getWeb3 = () => new Promise((resolve, reject) => {
         // User denied account access...
         reject();
       }
-    } else if (window.web3) {
+    } else if (process.env.NODE_ENV !== 'development' && window.web3) {
       // Use Mist/MetaMask's provider.
       web3 = new Web3(window.web3.currentProvider);
 

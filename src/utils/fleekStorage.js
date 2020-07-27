@@ -7,7 +7,7 @@ const {
 
 const BUCKET = 'hackfs-dark-horse-bucket';
 const DATA_DIRECTORY = 'MDS-trips';
-const ADS_DIRECTORY = 'mobility-ads';
+const ADS_DIRECTORY = 'campaigns';
 
 const ICONS_KEYS = {
   'santa-barbara': 'media/datasets/santa-monica.png',
