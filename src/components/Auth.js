@@ -23,7 +23,7 @@ import Title from './Title';
 import { SPACE } from './../utils/spaceDaemon';
 
 export default function Auth(props) {
-  const { web3, spaceClient } = props;
+  const { web3, spaceClient, onSetCampaigns } = props;
   const [openModal, setOpenModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const handleClickOpen = (event) => { setAnchorEl(event.currentTarget); setOpenModal(true); };
@@ -34,38 +34,55 @@ export default function Auth(props) {
   const [error, setError] = useState(null);
   const inputUsername = useRef();
 
+  const shortAddress = (address) => `${address.substring(0, 6)}...`;
+
+
   const getIdentity = async () => {
-    const _username = Cookies.get(`${SPACE}-username`);
-    if (!_username) {
-      setNewUser(true);
-    } else {
-      try {
-        const res = await spaceClient.getIdentityByUsername({ username: _username });
-        setIdentity(res.getIdentity());
-      } catch (error) {
-        setError('username does not exist');
-      }
-    }
+    const ethAddress = web3.coinbase;
+    // call lib class init
+    // const identity = lib.init()
+    // { ethAddress: '0x...', organization: '', category: '' };
+    setIdentity({ ethAddress, username: shortAddress(ethAddress) });
+  }
+
+  // query for all
+  const getCampaigsThread = async() => {
+    let res = {};
+    onSetCampaigns(res);
   };
 
-  const getBuckets = async () => {
-    try {
-      const res = await spaceClient.listBuckets();
-      const buckets = res.getBucketsList();
-      console.log(buckets);
+  // const getIdentity = async () => {
+  //   const _username = Cookies.get(`${SPACE}-username`);
+  //   if (!_username) {
+  //     setIdentity({ username: 'user' });
+  //   } else {
+  //     try {
+  //       const res = await spaceClient.getIdentityByUsername({ username: _username });
+  //       setIdentity(res.getIdentity());
+  //     } catch (error) {
+  //       setError('username does not exist');
+  //     }
+  //   }
+  // };
 
-      setBuckets(buckets);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // const getBuckets = async () => {
+  //   try {
+  //     const res = await spaceClient.listBuckets();
+  //     const buckets = res.getBucketsList();
+  //     console.log(buckets);
+  //
+  //     setBuckets(buckets);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   useEffect(() => {
     // init
     if (identity === null) {
       getIdentity();
     } else {
-      getBuckets();
+      getCampaigsThread();
     }
   }, [newUser, error, identity]);
 
@@ -150,7 +167,7 @@ export default function Auth(props) {
         {
           isEmpty(identity) && newUser === true
             ? popover()
-            : <Title> { (identity ? identity.array[2] : null) } </Title>
+            : <Title> { (identity ? identity.username : null) } </Title>
         }
       </div>
     </Badge>

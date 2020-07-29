@@ -130,6 +130,10 @@ export default function Dashboard(props) {
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
 
+  const onSetCampaignsThread = async() => {
+
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -151,7 +155,11 @@ export default function Dashboard(props) {
             {
               web3 && (
                 <div>
-                  <Auth web3={web3} spaceClient={spaceClient} />
+                  <Auth
+                    web3={web3}
+                    spaceClient={spaceClient}
+                    onSetCampaigns={onSetCampaignsThread}
+                  />
                 </div>
               )
             }
