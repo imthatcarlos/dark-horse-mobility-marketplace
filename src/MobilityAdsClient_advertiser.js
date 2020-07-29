@@ -15,11 +15,18 @@ class MobilityAdsClient {
     ipfsHash,
     budgetETH
   ) {
-    return this.contract.createCampaign(
+
+    // @TODO: create ThreadDB ActiveCampaign => with id: ipfsHash => new collection?
+    // @NOTE: thread id just like we do Trips (random id) for advertiser
+    // now we have an id to a collection record
+    let campaignResultsThreadId;
+
+    await this.contract.createCampaign(
       organization,
       category,
       title,
       ipfsHash,
+      campaignResultsThreadId,
       { from: this.account, value: this.web3.utils.toWei(budgetETH.toString()) }
     );
   }
