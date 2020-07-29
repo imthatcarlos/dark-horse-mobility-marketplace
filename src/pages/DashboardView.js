@@ -12,6 +12,8 @@ import Datasets from './../components/Datasets';
 import CreateAd from './../components/CreateAd';
 import { KEYS_NAMES } from './../utils/fleekStorage';
 
+const BOGUS_VALUE = 500000000;
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
@@ -31,10 +33,22 @@ export default function DashboardView(props) {
   const classes = useStyles();
   const [content, setContent] = useState(null);
   const [adForm, setAdForm] = useState(false);
+  const [usersReach, setUsersReach] = useState();
   const { web3, spaceClient, mAdsClient } = props;
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   const handleSetContent = (c) => { setContent(c) };
+
+  useEffect(() => {
+    if (!usersReach && mAdsClient) {
+      const fetchUsersReach = async () => {
+        const res = await mAdsClient.getCampaignReceiversCount();
+        setUsersReach(parseInt(res));
+      };
+
+      fetchUsersReach();
+    }
+  }, [mAdsClient]);
 
   const datasetContent = () => (
     <React.Fragment style={{ textAlign: 'left' }}>
@@ -73,6 +87,7 @@ export default function DashboardView(props) {
                 spaceClient={spaceClient}
                 setAdForm={setAdForm}
                 mAdsClient={mAdsClient}
+                usersReach={usersReach}
               />
             )
           }

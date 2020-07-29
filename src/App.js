@@ -8,7 +8,7 @@ import './App.css';
 import Dashboard from './pages/Dashboard';
 import { getWeb3 } from './utils/getWeb3';
 import { getContracts } from './utils/getContracts';
-import MobilityAdsClient from './MobilityAdsClient_advertiser';
+import MobilityAdsClient from './utils/MobilityAdsClient_advertiser';
 
 function App(props) {
   const [web3, setWeb3] = useState(null);

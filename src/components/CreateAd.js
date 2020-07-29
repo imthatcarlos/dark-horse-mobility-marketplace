@@ -15,7 +15,7 @@ import {
 import Title from './Title';
 
 import { SPACE } from './../utils/spaceDaemon';
-import { uploadedAd } from './../utils/fleekStorage';
+import { uploadAd } from './../utils/fleekStorage';
 
 const CATEGORIES = ['mobility', 'fashion', 'sports', 'coffee'];
 const COUNTRIES = ['United States', 'Italy', 'France', 'Spain'];
@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 });
 
 export default function CreateAd(props) {
-  const { web3, spaceClient, mAdsClient } = props;
+  const { web3, spaceClient, mAdsClient, usersReach } = props;
 
   const classes = useStyles();
   const [openModal, setOpenModal] = useState(false);
@@ -38,9 +38,9 @@ export default function CreateAd(props) {
   const handleClose = () => { setAnchorEl(null); setOpenModal(false); }
   const inputOrg = useRef();
   const inputTitle = useRef();
-  const inputBudget = useRef();
   const inputFile = useRef();
   const [inputCategory, setInputCategory] = useState('');
+  const [inputBudget, setInputBudget] = useState('');
 
   // NO LONGER USING SPACE DAEMON TO UPLOAD ASSETS
   const createAd = () => new Promise((resolve, reject) => {
@@ -48,10 +48,11 @@ export default function CreateAd(props) {
       const reader = new FileReader();
       reader.addEventListener('load', async (event) => {
         try {
-          const ipfsHash = await uploadedAd({
+          const key = `${inputOrg.current.value}-${inputTitle.current.value}`;
+          const ipfsHash = await uploadAd({
             account: web3.coinbase,
             data: event.target.result,
-            key: `${inputOrg.current.value}-${inputTitle.current.value}`
+            key
           });
 
           await mAdsClient.createCampaign(
@@ -59,8 +60,13 @@ export default function CreateAd(props) {
             inputCategory,
             inputTitle.current.value,
             ipfsHash,
-            0.1
+            `${web3.coinbase}/${key}`,
+            parseFloat(inputBudget)
           );
+
+          // @TODO: store in advertiser thread Campaigns
+          const id = await mAdsClient.getActiveCampaignId();
+          console.log(`campaign storage array id: ${id}`);
 
           setOpenModal(false);
 
@@ -129,12 +135,12 @@ export default function CreateAd(props) {
                 </Select>
               </Grid>
               <br/><br/>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <TextField
                   error={error !== null}
                   helperText={error}
                   id="ad-title"
-                  label="Campaign Title"
+                  label="Ad Title"
                   ref={inputTitle}
                   onChange={e => inputTitle.current.value = e.target.value}
                  />
@@ -145,13 +151,19 @@ export default function CreateAd(props) {
                   type="number"
                   helperText={error}
                   id="ad-budget"
-                  label="Budget"
-                  ref={inputBudget}
-                  onChange={e => inputBudget.current.value = e.target.value}
+                  label="ETH Budget"
+                  value={inputBudget}
+                  onChange={e => setInputBudget(e.target.value)}
                  />
               </Grid>
-              <Grid item xs={2}>
-                <InputLabel style={{ paddingTop: '85%' }} id="profile-category">ETH</InputLabel>
+              <Grid item xs={4}>
+                {
+                  inputBudget && (
+                    <div>
+                      reach {parseInt(inputBudget / 0.05)} users (out of {usersReach})
+                    </div>
+                  )
+                }
               </Grid>
               <Grid item xs={6}>
                 <input
