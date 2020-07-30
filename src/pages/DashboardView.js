@@ -34,7 +34,7 @@ export default function DashboardView(props) {
   const [content, setContent] = useState(null);
   const [adForm, setAdForm] = useState(false);
   const [usersReach, setUsersReach] = useState();
-  const { web3, spaceClient, mAdsClient } = props;
+  const { web3, spaceClient, mAdsClient, threadInstance } = props;
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   const handleSetContent = (c) => { setContent(c) };
@@ -88,6 +88,8 @@ export default function DashboardView(props) {
                 setAdForm={setAdForm}
                 mAdsClient={mAdsClient}
                 usersReach={usersReach}
+                threadInstance={threadInstance}
+
               />
             )
           }

@@ -27,7 +27,13 @@ const useStyles = makeStyles({
 });
 
 export default function CreateAd(props) {
-  const { web3, spaceClient, mAdsClient, usersReach } = props;
+  const {
+    web3,
+    spaceClient,
+    mAdsClient,
+    usersReach,
+    threadInstance
+  } = props;
 
   const classes = useStyles();
   const [openModal, setOpenModal] = useState(false);
@@ -56,19 +62,22 @@ export default function CreateAd(props) {
             key
           });
 
-          await mAdsClient.createCampaign(
-            inputOrg.current.value,
-            inputCategory,
-            inputTitle.current.value,
-            ipfsHash,
-            `${web3.coinbase}/${key}`,
-            parseFloat(inputBudget)
-          );
+          // await mAdsClient.createCampaign(
+          //   inputOrg.current.value,
+          //   inputCategory,
+          //   inputTitle.current.value,
+          //   ipfsHash,
+          //   `${web3.coinbase}/${key}`,
+          //   parseFloat(inputBudget)
+          // );
 
           // @TODO: store in advertiser thread Campaigns
           // storageId
-          const id = await mAdsClient.getActiveCampaignId();
+          const id = parseInt(await mAdsClient.getActiveCampaignId());
           console.log(`campaign storage array id: ${id}`);
+
+          // await threadInstance.initCampaigns(id, key);
+          await threadInstance.updateAdvertiser(inputOrg.current.value, inputCategory)
 
           setOpenModal(false);
 

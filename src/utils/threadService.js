@@ -91,24 +91,23 @@ const setOrGetIdentity = async () => {
 
 class ThreadService {
     constructor () {
-        // const currentThreadID = window.location.hash.replace('#', '');
-        const currentThreadID = process.env.REACT_APP_USER_THREAD_ID || '';
+        const currentThreadID = localStorage.getItem('hash');
         console.log(currentThreadID);
+        // const currentThreadID = process.env.REACT_APP_USER_THREAD_ID || '';
+        // console.log(currentThreadID);
         this.threadID = currentThreadID ? ThreadID.fromString(currentThreadID) : ThreadID.fromRandom()
 
     }
-    
+
     async init() {
         this.identity = await setOrGetIdentity()
         const key = {key: process.env.REACT_APP_API_KEY || ''}
-        console.log(process.env.REACT_APP_API_KEY);
         this.db = await Database.withKeyInfo(key, DBNAME, undefined, undefined)
         // return this;
     }
 
     async start(ethAddr) {
       this.ethAddr = ethAddr
-    // console.log(this.identity);
       if (!this.identity) {
           throw new Error('Identity not found')
       }
@@ -116,62 +115,70 @@ class ThreadService {
           throw new Error('Database not setup')
       }
 
-      await this.db.start(this.identity, {threadID: this.threadID});
+      try {
+        await this.db.start(this.identity, {threadID: this.threadID});
+      } catch (error) {
+        console.log(error);
+      }
 
       await this.initAdvertisers(ethAddr);
 
-      // TODO: Stores ThreadId for current session (I guess). Maybe no need for this. 
-      // this.storeCurrentThreadId();
+      // TODO: Stores ThreadId for current session (I guess). Maybe no need for this.
+      this.storeCurrentThreadId();
 
       return this.threadID;
     }
 
-    // storeCurrentThreadId () {
-    //     const currentThreadID = this.threadID.toString();
-    //     window.location.hash = currentThreadID
-    // }
+    storeCurrentThreadId () {
+        const currentThreadID = this.threadID.toString();
+        localStorage.setItem('hash', currentThreadID)
+    }
 
     async initAdvertisers (ethAddr) {
-        if (!this.db) {
-          throw new Error('No db')
-        }
-        const { collections } = this.db
-        const c = collections.get('advertisers');
+        try {
+          if (!this.db) {
+            throw new Error('No db')
+          }
+          const { collections } = this.db
+          const c = collections.get('advertisers');
 
-        if (c) {
-          console.log("collection found...");
-          this.Advertisers = c
-          const data = await this.queryAdvertisers(ethAddr);
+          if (c) {
+            console.log("collection found...");
+            this.Advertisers = c
+            const data = await this.queryAdvertisers(ethAddr);
 
-          if (isEmpty(data)) {
-            console.log("no data for the user");
+            if (isEmpty(data)) {
+              console.log("no data for the user");
+              this.advertiser = new this.Advertisers({ _id: '', ethAddr });
+              await this.advertiser.save()
+
+            } else {
+              this.advertiser = new this.Advertisers(data[0].value);
+            }
+
+          } else {
+            console.log("collection not found...")
+            this.Advertisers = await this.db.newCollection('advertisers', AdvertiserSchema)
             this.advertiser = new this.Advertisers({ _id: '', ethAddr });
             await this.advertiser.save()
-          
-          } else {
-            this.advertiser = new this.Advertisers(data[0].value);
           }
-
-        } else {
-          console.log("collection not found...")
-          this.Advertisers = await this.db.newCollection('advertisers', AdvertiserSchema)
-          this.advertiser = new this.Advertisers({ _id: '', ethAddr });
-          await this.advertiser.save()
+          this.storeCurrentThreadId()
+        } catch (error) {
+          console.log(error)
         }
-        // this.storeCurrentThreadId()
-    } 
+    }
 
   async updateAdvertiser (org, cateogry) {
     if (this.advertiser) {
       this.advertiser.org = org
       this.advertiser.category = cateogry
       await this.advertiser.save()
-    
+
     } else {
       throw new Error('Failed to update advertiser. No advertiser instance')
     }
   }
-  
+
   async initCampaigns (storageId, bucketKey) {
     if (!this.db) {
       throw new Error('No db')
@@ -186,18 +193,18 @@ class ThreadService {
       if (isEmpty(data)) {
         this.campaign = new this.Campaigns({ _id: '', ethAddr: this.ethAddr, storageId, bucketKey });
         await this.campaign.save()
-      
+
       } else {
         this.campaign = new this.Campaigns(data[0].value);
       }
-    
+
     } else {
       console.log("collection not found...")
       this.Campaigns = await this.db.newCollection('campaigns', CampaignSchema)
       this.campaign = new this.Campaigns({ _id: '', ethAddr: this.ethAddr, storageId, bucketKey });
       await this.campaign.save()
     }
-    // this.storeCurrentThreadId()
+    this.storeCurrentThreadId()
   }
 
   async updateCampaign (numClicks, numReachs) {
@@ -232,7 +239,7 @@ class ThreadService {
   async queryAllCampaigns () {
     const { collections } = this.db;
     const c = collections.get('campaigns');
-    
+
     if (c) {
       console.log("collection exists.")
       const query = {

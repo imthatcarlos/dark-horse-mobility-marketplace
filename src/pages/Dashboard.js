@@ -130,7 +130,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard(props) {
   const classes = useStyles();
-  const { web3, spaceClient, mAdsClient } = props;
+  const { web3, spaceClient, mAdsClient, threadInstance } = props;
 
   const [open, setOpen] = useState(true);
   const handleDrawerOpen = () => setOpen(true);
@@ -160,13 +160,12 @@ export default function Dashboard(props) {
           <div>
             {
               web3 && (
-                <div>
-                  <Auth
-                    web3={web3}
-                    spaceClient={spaceClient}
-                    onSetCampaigns={onSetCampaignsThread}
-                  />
-                </div>
+                <Auth
+                  web3={web3}
+                  spaceClient={spaceClient}
+                  onSetCampaigns={onSetCampaignsThread}
+                  threadInstance={threadInstance}
+                />
               )
             }
           </div>

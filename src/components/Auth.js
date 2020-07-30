@@ -22,17 +22,19 @@ import { find } from 'lodash/collection';
 import Title from './Title';
 import { SPACE } from './../utils/spaceDaemon';
 
-import ThreadService from './../utils/threadService';
-
 export default function Auth(props) {
-  const { web3, spaceClient, onSetCampaigns } = props;
+  const {
+    web3,
+    spaceClient,
+    onSetCampaigns,
+    threadInstance
+  } = props;
   const [openModal, setOpenModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const handleClickOpen = (event) => { setAnchorEl(event.currentTarget); setOpenModal(true); };
   const handleClose = () => { setAnchorEl(null); setOpenModal(false); }
   const [identity, setIdentity] = useState(null);
   const [newUser, setNewUser] = useState(null);
-  const [threadInstance, setThreadInstance] = useState(null);
   const [error, setError] = useState(null);
   const inputUsername = useRef();
 
@@ -40,16 +42,8 @@ export default function Auth(props) {
 
 
   const getIdentity = async () => {
-    const ethAddress = web3.coinbase;
-    const threadService = new ThreadService();
-    await threadService.init();
-    const threadId = await threadService.start(ethAddress);
-
-    // call lib class init
-    // const identity = lib.init()
-    // { ethAddress: '0x...', organization: '', category: '' };
-    setThreadInstance(threadService);
-    setIdentity({ ethAddress, username: shortAddress(ethAddress) });
+    // maybe something with thread?
+    setIdentity({ username: shortAddress(web3.coinbase) });
   }
 
   // query for all

@@ -9,14 +9,16 @@ import Dashboard from './pages/Dashboard';
 import { getWeb3 } from './utils/getWeb3';
 import { getContracts } from './utils/getContracts';
 import MobilityAdsClient from './utils/MobilityAdsClient_advertiser';
+import ThreadService from './utils/threadService';
 
 function App(props) {
   const [web3, setWeb3] = useState(null);
   const [mAdsClient, setMAdsClient] = useState(null);
-  // default port exposed by the daemon for client connection is 9998
-  const spaceClient = new SpaceClient({
-    url: `http://0.0.0.0:9998`,
-  });
+  const [threadInstance, setThreadInstance] = useState(null);
+  // // default port exposed by the daemon for client connection is 9998
+  // const spaceClient = new SpaceClient({
+  //   url: `http://0.0.0.0:9998`,
+  // });
 
   const theme = React.useMemo(
     () => createMuiTheme({
@@ -31,6 +33,13 @@ function App(props) {
       const fetchWeb3 = async () => {
         const web3 = await getWeb3();
         const contracts = await getContracts(web3);
+
+        // init thread client
+        const threadService = new ThreadService();
+        await threadService.init();
+        await threadService.start(web3.coinbase);
+
+        setThreadInstance(threadService);
 
         setMAdsClient(new MobilityAdsClient({
           web3,
@@ -54,8 +63,9 @@ function App(props) {
         <CssBaseline/>
         <Dashboard
           web3={web3}
-          spaceClient={spaceClient}
+          spaceClient={null}
           mAdsClient={mAdsClient}
+          threadInstance={threadInstance}
         />
       </ThemeProvider>
     </div>
