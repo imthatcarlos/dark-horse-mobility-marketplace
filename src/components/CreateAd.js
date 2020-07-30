@@ -160,7 +160,7 @@ export default function CreateAd(props) {
                 {
                   inputBudget && (
                     <div>
-                      reach {parseInt(inputBudget / 0.05)} users (out of {usersReach})
+                      reach {parseInt(inputBudget / 0.05)} users ({usersReach} available)
                     </div>
                   )
                 }
@@ -199,7 +199,7 @@ export default function CreateAd(props) {
     <React.Fragment>
       <Title>Advertise</Title>
       <br/>
-      <p style={{ fontSize: '16px' }}>Show your ad post-trip. 25% of campaign budget paid towards customers engaged.</p>
+      <p style={{ fontSize: '16px' }}>Create an ad to show post-trip. Pay more ETH for more reach</p>
       <br/>
       { createProfilePopover() }
     </React.Fragment>

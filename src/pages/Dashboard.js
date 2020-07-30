@@ -120,6 +120,12 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+  logo: {
+    display: 'flex',
+    alignSelf: 'center',
+    position: 'absolute',
+    padding: '5px'
+  }
 }));
 
 export default function Dashboard(props) {
@@ -174,6 +180,12 @@ export default function Dashboard(props) {
           }}
           open={open}
         >
+          <img
+            src="dark-horse-logo.png" alt="logo"
+            className={classes.logo}
+            width="65px"
+            height="65px"
+          />
           <div className={classes.toolbarIcon}>
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />

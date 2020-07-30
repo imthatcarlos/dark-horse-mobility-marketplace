@@ -18,6 +18,7 @@ const Links = (
         <Link style={{ color: 'white', textDecoration: 'none' }} to="/"><ListItemText primary="Dashboard" /></Link>
       </Typography>
     </ListItem>
+    <br />
     <ListItem button>
       <ListItemIcon>
         <MobileScreenShareIcon />
