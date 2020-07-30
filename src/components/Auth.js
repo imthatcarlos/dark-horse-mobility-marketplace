@@ -22,6 +22,8 @@ import { find } from 'lodash/collection';
 import Title from './Title';
 import { SPACE } from './../utils/spaceDaemon';
 
+import ThreadService from './../utils/threadService';
+
 export default function Auth(props) {
   const { web3, spaceClient, onSetCampaigns } = props;
   const [openModal, setOpenModal] = useState(false);
@@ -30,7 +32,7 @@ export default function Auth(props) {
   const handleClose = () => { setAnchorEl(null); setOpenModal(false); }
   const [identity, setIdentity] = useState(null);
   const [newUser, setNewUser] = useState(null);
-  const [buckets, setBuckets] = useState(null);
+  const [threadInstance, setThreadInstance] = useState(null);
   const [error, setError] = useState(null);
   const inputUsername = useRef();
 
@@ -39,49 +41,30 @@ export default function Auth(props) {
 
   const getIdentity = async () => {
     const ethAddress = web3.coinbase;
+    const threadService = new ThreadService();
+    await threadService.init();
+    const threadId = await threadService.start(ethAddress);
+
     // call lib class init
     // const identity = lib.init()
     // { ethAddress: '0x...', organization: '', category: '' };
+    setThreadInstance(threadService);
     setIdentity({ ethAddress, username: shortAddress(ethAddress) });
   }
 
   // query for all
   const getCampaigsThread = async() => {
-    let res = {};
+    const res = await threadInstance.queryAllCampaigns();
+    console.log(res);
     onSetCampaigns(res);
-  };
-
-  // const getIdentity = async () => {
-  //   const _username = Cookies.get(`${SPACE}-username`);
-  //   if (!_username) {
-  //     setIdentity({ username: 'user' });
-  //   } else {
-  //     try {
-  //       const res = await spaceClient.getIdentityByUsername({ username: _username });
-  //       setIdentity(res.getIdentity());
-  //     } catch (error) {
-  //       setError('username does not exist');
-  //     }
-  //   }
-  // };
-
-  // const getBuckets = async () => {
-  //   try {
-  //     const res = await spaceClient.listBuckets();
-  //     const buckets = res.getBucketsList();
-  //     console.log(buckets);
-  //
-  //     setBuckets(buckets);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
+  }
 
   useEffect(() => {
     // init
     if (identity === null) {
       getIdentity();
     } else {
+      console.log(threadInstance)
       getCampaigsThread();
     }
   }, [newUser, error, identity]);

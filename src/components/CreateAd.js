@@ -48,6 +48,7 @@ export default function CreateAd(props) {
       const reader = new FileReader();
       reader.addEventListener('load', async (event) => {
         try {
+          // bucketKey
           const key = `${inputOrg.current.value}-${inputTitle.current.value}`;
           const ipfsHash = await uploadAd({
             account: web3.coinbase,
@@ -65,6 +66,7 @@ export default function CreateAd(props) {
           );
 
           // @TODO: store in advertiser thread Campaigns
+          // storageId
           const id = await mAdsClient.getActiveCampaignId();
           console.log(`campaign storage array id: ${id}`);
 

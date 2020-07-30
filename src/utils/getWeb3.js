@@ -78,7 +78,7 @@ export const getWeb3 = () => new Promise((resolve, reject) => {
           ...web3,
           network: 'development',
           accounts: accounts,
-          coinbase: accounts[0]
+          coinbase: accounts[5]
         });
       } else {
         reject();
