@@ -76,7 +76,7 @@ export default function CreateAd(props) {
           const id = parseInt(await mAdsClient.getActiveCampaignId());
           console.log(`campaign storage array id: ${id}`);
 
-          // await threadInstance.initCampaigns(id, key);
+          await threadInstance.initCampaigns(id, key);
           await threadInstance.updateAdvertiser(inputOrg.current.value, inputCategory)
 
           setOpenModal(false);
@@ -119,7 +119,7 @@ export default function CreateAd(props) {
               container
             >
               <Grid item xs={12} >
-                <Title>Create Campaign</Title>
+                <Title>Create Campaign (active for 15 days)</Title>
               </Grid>
               <Grid item xs={6}>
                  <TextField
@@ -171,10 +171,13 @@ export default function CreateAd(props) {
                 {
                   inputBudget && (
                     <div>
-                      reach {parseInt(inputBudget / 0.05)} users ({usersReach} available)
+                      reach {parseInt(inputBudget / 0.05)} users ({usersReach} active)
                     </div>
                   )
                 }
+              </Grid>
+              <Grid item xs={6}>
+                { filename }
               </Grid>
               <Grid item xs={6}>
                 <input
@@ -192,10 +195,9 @@ export default function CreateAd(props) {
                   </Button>
                 </label>
               </Grid>
-              <Grid item xs={6}>
-                { filename }
+              <Grid item xs={8}>
+                * Unspent ETH from budget will be refunded at campaign expiration
               </Grid>
-              <Grid item xs={8} />
               <Grid item xs={4}>
                  <Button onClick={createAd} style={{ marginTop: 10 }}>Create</Button>
               </Grid>

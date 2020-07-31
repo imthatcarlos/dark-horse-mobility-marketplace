@@ -36,6 +36,7 @@ class MobilityAdsClient {
         title: data.title,
         category: data.category,
         budget: this.web3.utils.fromWei(data.budgetWei, 'ether'),
+        expiresAt: parseInt(data.expiresAt),
         fileData
       };
     } catch (error) {
@@ -50,6 +51,11 @@ class MobilityAdsClient {
 
   async getCampaignReceiversCount() {
     return this.contract.totalCampaignReceivers({ from: this.account });
+  }
+
+  async getCampaignRefundedBudget() {
+    const wei = await this.contract.calculateRefundedWei({ from: this.account });
+    return this.web3.utils.fromWei(wei, 'ether');
   }
 }
 

@@ -51,20 +51,22 @@ export default function DashboardView(props) {
   }, [mAdsClient]);
 
   const datasetContent = () => (
-    <React.Fragment style={{ textAlign: 'left' }}>
-      <Title>Metadata for {KEYS_NAMES[content.key]}</Title>
-      <br/>
-      <Grid container spacing={2}>
-        {
-          Object.keys(content.meta).map((m) => (
-            <Grid item xs={12} key={m}>
-              <Typography component="p" variant="h6">
-                { m } => { content.meta[m] }
-              </Typography>
-            </Grid>
-          ))
-        }
-      </Grid>
+    <React.Fragment>
+      <div style={{ textAlign: 'left' }}>
+        <Title>Metadata for {KEYS_NAMES[content.key]}</Title>
+        <br/>
+        <Grid container spacing={2}>
+          {
+            Object.keys(content.meta).map((m) => (
+              <Grid item xs={12} key={m}>
+                <Typography component="p" variant="h6">
+                  { m } => { content.meta[m] }
+                </Typography>
+              </Grid>
+            ))
+          }
+        </Grid>
+      </div>
     </React.Fragment>
   );
 

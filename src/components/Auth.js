@@ -43,7 +43,11 @@ export default function Auth(props) {
 
   const getIdentity = async () => {
     // maybe something with thread?
-    setIdentity({ username: shortAddress(web3.coinbase) });
+    const b = await web3.eth.getBalance(web3.coinbase);
+    setIdentity({
+      username: shortAddress(web3.coinbase),
+      balance: Number(parseFloat(web3.utils.fromWei(b, 'ether')).toFixed(2))
+    });
   }
 
   // query for all
@@ -58,7 +62,6 @@ export default function Auth(props) {
     if (identity === null) {
       getIdentity();
     } else {
-      console.log(threadInstance)
       getCampaigsThread();
     }
   }, [newUser, error, identity]);
@@ -144,7 +147,7 @@ export default function Auth(props) {
         {
           isEmpty(identity) && newUser === true
             ? popover()
-            : <Title> { (identity ? identity.username : null) } </Title>
+            : <Title> { (identity ? `${identity.username} | ${identity.balance} ETH` : null) } </Title>
         }
       </div>
     </Badge>
