@@ -116,7 +116,8 @@ class ThreadService {
       }
 
       try {
-        await this.db.start(this.identity, {threadID: this.threadID});
+        // await this.db.start(this.identity, {threadID: this.threadID});
+        await this.db.start(this.identity, {threadID: undefined});
       } catch (error) {
         console.log(error);
       }

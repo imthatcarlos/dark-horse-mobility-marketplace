@@ -62,14 +62,14 @@ export default function CreateAd(props) {
             key
           });
 
-          // await mAdsClient.createCampaign(
-          //   inputOrg.current.value,
-          //   inputCategory,
-          //   inputTitle.current.value,
-          //   ipfsHash,
-          //   `${web3.coinbase}/${key}`,
-          //   parseFloat(inputBudget)
-          // );
+          await mAdsClient.createCampaign(
+            inputOrg.current.value,
+            inputCategory,
+            inputTitle.current.value,
+            ipfsHash,
+            `${web3.coinbase}/${key}`,
+            parseFloat(inputBudget)
+          );
 
           // @TODO: store in advertiser thread Campaigns
           // storageId
