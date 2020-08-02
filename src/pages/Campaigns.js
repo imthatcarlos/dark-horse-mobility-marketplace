@@ -44,10 +44,10 @@ export default function Campaigns(props) {
     if (activeCampaign && activeResults === undefined) {
       const fetchResults = async () => {
         const impressions = await getAdImpressions({ account: web3.coinbase, key: `${activeCampaign.organization}-${activeCampaign.title}`});
-        // const unspent = await mAdsClient.getCampaignRefundedBudget();
+        const unspent = await mAdsClient.getCampaignRefundedBudget();
         setActiveResults({
           impressions,
-          // unspent
+          unspent
         });
       }
       fetchResults();
@@ -99,7 +99,7 @@ export default function Campaigns(props) {
                           impressions: {activeResults.impressions}
                         </p>
                         <p style={{ textAlign: 'left'}}>
-                          unspent budget: {activeCampaign.budget} ETH
+                          unspent budget: {activeResults.unspent} ETH
                         </p>
                         <br />
                         <Button onClick={closeCampaign}>Close Campaign</Button>

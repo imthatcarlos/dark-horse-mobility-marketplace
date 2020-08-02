@@ -14,7 +14,7 @@ export const getWeb3 = () => new Promise((resolve, reject) => {
     var web3;
 
     // Modern dapp browsers...
-    if (process.env.NODE_ENV !== 'development' && window.ethereum) {
+    if (window.ethereum) {
       web3 = new Web3(window.ethereum);
       try {
         // Request account access if needed
