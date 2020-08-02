@@ -2,15 +2,6 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-#### Uses space-daemon to provide textile client + services
-Install instructions [here](https://docs.fleek.co/space-daemon/getting-started/#installation) and after that:
-```
-cd Downloads
-cp <binary-name> spaced
-chmod 755 spaced
-./spaced
-```
-
 #### Getting Started
 ```
 yarn install
