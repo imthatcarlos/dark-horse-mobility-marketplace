@@ -21,6 +21,7 @@ import { find } from 'lodash/collection';
 
 import Title from './Title';
 import { SPACE } from './../utils/spaceDaemon';
+import { shortAddress } from './../utils/getWeb3';
 
 export default function Auth(props) {
   const {
@@ -37,9 +38,6 @@ export default function Auth(props) {
   const [newUser, setNewUser] = useState(null);
   const [error, setError] = useState(null);
   const inputUsername = useRef();
-
-  const shortAddress = (address) => `${address.substring(0, 6)}...`;
-
 
   const getIdentity = async () => {
     // maybe something with thread?

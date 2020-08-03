@@ -7,7 +7,6 @@ import {
   Typography,
   Button
 } from '@material-ui/core';
-import { withRouter } from 'react-router';
 import moment from 'moment';
 
 import Title from './../components/Title';
@@ -70,8 +69,8 @@ export default function Campaigns(props) {
                 <Grid item xs={4} md={4} lg={4}>
                   <img
                     src={activeCampaign.fileData}
-                    width="150px"
-                    height="150px"
+                    width="250px"
+                    height="100%"
                   />
                 </Grid>
                 <Grid item xs={4} md={4} lg={4}>

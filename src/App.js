@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { SpaceClient } from '@fleekhq/space-client';
+// import { SpaceClient } from '@fleekhq/space-client';
+import { ApolloProvider } from '@apollo/react-hooks';
+import ApolloClient from 'apollo-boost';
 
 import logo from './logo.svg';
 import './App.css';
@@ -19,6 +21,8 @@ function App(props) {
   // const spaceClient = new SpaceClient({
   //   url: `http://0.0.0.0:9998`,
   // });
+
+  const apolloClient = new ApolloClient({ uri: process.env.REACT_APP_GRAPH_URL });
 
   const theme = React.useMemo(
     () => createMuiTheme({
@@ -61,12 +65,14 @@ function App(props) {
     <div className="App">
       <ThemeProvider theme={theme}>
         <CssBaseline/>
-        <Dashboard
-          web3={web3}
-          spaceClient={null}
-          mAdsClient={mAdsClient}
-          threadInstance={threadInstance}
-        />
+        <ApolloProvider client={apolloClient}>
+          <Dashboard
+            web3={web3}
+            spaceClient={null}
+            mAdsClient={mAdsClient}
+            threadInstance={threadInstance}
+          />
+        </ApolloProvider>
       </ThemeProvider>
     </div>
   );
