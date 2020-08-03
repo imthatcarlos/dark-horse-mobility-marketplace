@@ -2,6 +2,7 @@
   "name": "mobility-marketplace",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@fleekhq/fleek-storage-js": "^1.0.2",
     "@fleekhq/space-client": "^0.1.5",
