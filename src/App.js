@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { SpaceClient } from '@fleekhq/space-client';
+// import { SpaceClient } from '@fleekhq/space-client';
+import { ApolloProvider } from '@apollo/react-hooks';
+import ApolloClient from 'apollo-boost';
 
 import logo from './logo.svg';
 import './App.css';
@@ -20,6 +22,8 @@ function App(props) {
   //   url: `http://0.0.0.0:9998`,
   // });
 
+  const apolloClient = new ApolloClient({ uri: process.env.REACT_APP_GRAPH_URL });
+
   const theme = React.useMemo(
     () => createMuiTheme({
       palette: {
@@ -31,26 +35,30 @@ function App(props) {
   useEffect(() => {
     if (web3 === null) {
       const fetchWeb3 = async () => {
-        const web3 = await getWeb3();
-        const contracts = await getContracts(web3);
+        try {
+          const web3 = await getWeb3();
+          const contracts = await getContracts(web3);
 
-        // init thread client
-        const threadService = new ThreadService();
-        await threadService.init();
-        await threadService.start(web3.coinbase);
+          // init thread client
+          const threadService = new ThreadService();
+          await threadService.init();
+          await threadService.start(web3.coinbase);
 
-        setThreadInstance(threadService);
+          setThreadInstance(threadService);
 
-        setMAdsClient(new MobilityAdsClient({
-          web3,
-          account: web3.coinbase,
-          contract: contracts.mobilityCampaigns
-        }));
+          setMAdsClient(new MobilityAdsClient({
+            web3,
+            account: web3.coinbase,
+            contract: contracts.mobilityCampaigns
+          }));
 
-        setWeb3({
-          ...web3,
-          ...contracts
-        });
+          setWeb3({
+            ...web3,
+            ...contracts
+          });
+        } catch (error) {
+          console.log(error);
+        }
       };
 
       fetchWeb3();
@@ -61,12 +69,14 @@ function App(props) {
     <div className="App">
       <ThemeProvider theme={theme}>
         <CssBaseline/>
-        <Dashboard
-          web3={web3}
-          spaceClient={null}
-          mAdsClient={mAdsClient}
-          threadInstance={threadInstance}
-        />
+        <ApolloProvider client={apolloClient}>
+          <Dashboard
+            web3={web3}
+            spaceClient={null}
+            mAdsClient={mAdsClient}
+            threadInstance={threadInstance}
+          />
+        </ApolloProvider>
       </ThemeProvider>
     </div>
   );

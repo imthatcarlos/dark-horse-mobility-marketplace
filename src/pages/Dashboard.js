@@ -28,6 +28,7 @@ import Auth from './../components/Auth';
 import Links from './../components/Links';
 import DashboardView from './DashboardView';
 import Campaigns from './Campaigns';
+import Feed from './Feed/Feed';
 
 function Copyright() {
   return (
@@ -202,6 +203,9 @@ export default function Dashboard(props) {
               </Route>
               <Route exact path="/campaigns">
                 <Campaigns { ...props } />
+              </Route>
+              <Route exact path="/feed">
+                { web3 && <Feed { ...props } /> }
               </Route>
             </Switch>
             <Box pt={4}>

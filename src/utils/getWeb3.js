@@ -7,6 +7,8 @@ const NETWORKS = {
   4: "unknown"
 };
 
+export const shortAddress = (address) => `${address.substring(0, 6)}...`;
+
 export const getWeb3 = () => new Promise((resolve, reject) => {
   // Wait for loading completion to avoid race conditions with web3 injection timing.
   window.addEventListener('load', async () => {
