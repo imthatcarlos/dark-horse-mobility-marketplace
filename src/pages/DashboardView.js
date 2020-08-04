@@ -9,6 +9,7 @@ import {
 
 import Title from './../components/Title';
 import Datasets from './../components/Datasets';
+import MetaDataTable from './../components/MetaDataTable';
 import CreateAd from './../components/CreateAd';
 import { KEYS_NAMES } from './../utils/fleekStorage';
 
@@ -57,13 +58,10 @@ export default function DashboardView(props) {
         <br/>
         <Grid container spacing={2}>
           {
-            Object.keys(content.meta).map((m) => (
-              <Grid item xs={12} key={m}>
-                <Typography component="p" variant="h6">
-                  { m } => { content.meta[m] }
-                </Typography>
-              </Grid>
-            ))
+            <MetaDataTable
+              geofence={content.key}
+              threadInstance={threadInstance}
+            />
           }
         </Grid>
       </div>

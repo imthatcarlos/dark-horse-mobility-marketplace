@@ -26,6 +26,7 @@ import {
 
 import Auth from './../components/Auth';
 import Links from './../components/Links';
+import PurchasedTripsTable from './../components/PurchasedTripsTable';
 import DashboardView from './DashboardView';
 import Campaigns from './Campaigns';
 import Feed from './Feed/Feed';
@@ -206,6 +207,9 @@ export default function Dashboard(props) {
               </Route>
               <Route exact path="/feed">
                 { web3 && <Feed { ...props } /> }
+              </Route>
+              <Route exact path="/datasets">
+                <PurchasedTripsTable { ...props }/>
               </Route>
             </Switch>
             <Box pt={4}>

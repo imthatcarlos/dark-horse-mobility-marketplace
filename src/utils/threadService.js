@@ -67,6 +67,33 @@ export const CampaignSchema = {
 };
 
 
+export const PurchasesSchema = {
+  $id: 'https://example.com/astronaut.schema.json',
+  $schema: "http://json-schema.org/draft-07/schema#",
+  definitions: {
+    Advertiser: {
+      title: "Purchases",
+      type: "object",
+      properties: {
+        _id: {
+          type: "string",
+        },
+        ethAddr: {
+          type: "string",
+        },
+        publicUrl: {
+          type: "string",
+        },
+        txHash: {
+            type: "string",
+        },
+      },
+      required: ["_id", "publicUrl", "txHash"],
+    },
+  },
+};
+
+
 const setOrGetIdentity = async () => {
     try {
       var storedIdent = localStorage.getItem("identity")
@@ -92,9 +119,6 @@ const setOrGetIdentity = async () => {
 class ThreadService {
     constructor () {
         const currentThreadID = localStorage.getItem('hash');
-        console.log(currentThreadID);
-        // const currentThreadID = process.env.REACT_APP_USER_THREAD_ID || '';
-        // console.log(currentThreadID);
         this.threadID = currentThreadID ? ThreadID.fromString(currentThreadID) : ThreadID.fromRandom()
 
     }
@@ -218,6 +242,60 @@ class ThreadService {
     }
   }
 
+  async initPurchases (txHash, fileUrl) {
+    if (!this.db) {
+      throw new Error('No db')
+    }
+    const { collections } = this.db
+    const c = collections.get('purchases');
+    if (c) {
+      console.log("collection found...");
+      this.Purchases = c
+      const data = await this.queryPurchases(fileUrl);
+
+      if (isEmpty(data)) {
+        this.purchase = new this.Purchases({ _id: "", ethAddr: this.ethAddr, publicUrl: fileUrl, txHash })
+        await this.purchase.save();
+
+      } else {
+        this.purchase = new this.Purchases(data[0].value);
+      }
+
+    } else {
+      console.log("collection not found...")
+      this.Purchases = await this.db.newCollection('purchases', PurchasesSchema);
+      this.purchase = new this.Purchases({ _id: "", ethAddr: this.ethAddr, publicUrl: fileUrl, txHash })
+      await this.purchase.save();
+    }
+  }
+
+  async queryPurchases (fileUrl) {
+    const query = {
+      $and: [
+        {publicUrl: fileUrl},
+        {ethAddr: this.ethAddr}
+      ]
+    };
+    const cursor = this.Purchases.find(query);
+    return await collect(cursor);
+  };
+
+  async queryAllPurchases () {
+    const { collections } = this.db;
+    const c = collections.get('purchases');
+    if (c) {
+      console.log("collection exists");
+      const query = {
+        ethAddr: this.ethAddr
+      };
+      const cursor = c.find(query);
+      return await collect(cursor);
+    } else {
+      console.log("no collections");
+      return [];
+    }
+  };
+  
   async queryAdvertisers (ethAddr) {
     const query = {
       ethAddr: ethAddr
