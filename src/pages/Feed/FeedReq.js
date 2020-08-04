@@ -11,7 +11,7 @@ export function useFeedCampaignsReq() {
     return null;
   }
 
-  return data.mobilityCampaigns;
+  return data;
 }
 
 export function useFeedRewardsReq() {

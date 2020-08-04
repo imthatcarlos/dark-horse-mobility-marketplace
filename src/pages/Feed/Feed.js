@@ -7,9 +7,11 @@ import {
   Typography
 } from '@material-ui/core';
 import moment from 'moment';
+import { concat, flatten } from 'lodash/array';
+import { orderBy } from 'lodash/collection';
 
 import Title from './../../components/Title';
-import { useFeedCampaignsReq } from './FeedReq';
+import { useFeedCampaignsReq, useFeedRewardsReq } from './FeedReq';
 import { shortAddress } from './../../utils/getWeb3';
 
 const useStyles = makeStyles((theme) => ({
@@ -52,6 +54,7 @@ function FeedItem(props) {
       onMouseOut={() => setElevation(2)}
       >
       <Title>{ data.text }</Title>
+      <div style={{ textAlign: 'right', right: 0, lineHeight: 0 }}>{data.ts}</div>
     </Paper>
   );
 }
@@ -60,42 +63,70 @@ export default function Campaigns(props) {
   const classes = useStyles();
   const { web3 } = props;
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const [graphData, setGraphData] = useState();
 
   const campaigns = useFeedCampaignsReq();
+  const users = useFeedRewardsReq();
 
-  // const getEth = (wei) => web3.utils.fromWei(wei.toString(), 'ether');
-  const getEth = (wei) => 0.25;
+  const getEth = (wei) => web3.utils.fromWei(wei.toString(), 'ether');
+  const timeDiff = (ts) => moment.duration(moment.utc().diff(moment.utc(ts * 1000))).humanize();
 
   const getItem = ({ type, data }) => {
     if (type === 'campaign') {
       return {
-        text: `[${shortAddress(data.creator.owner)}] created campaign ${data.title} for ${getEth(data.budgetWei)} ETH`
+        text: `[${shortAddress(data.creator.owner)}] created campaign '${data.title}' for ${getEth(data.budgetWei)} ETH 🔥`,
+        ts: `${timeDiff(data.createdAt)} ago`
       };
     }
+
+    if (type === 'user') {
+      return {
+        text: `[${shortAddress(data.account)}] joined ad rewards 🚀`,
+        ts: `${timeDiff(data.enabledAt)} ago`
+      };
+    }
+
+    return {
+      text: `[${shortAddress(data.account)}] received ${getEth(data.rewardsWei)} ETH in rewards 💸`,
+      ts: `${timeDiff(data.withdrewAt)} ago`
+    };
   }
 
   useEffect(() => {
-    if (campaigns) {
-      console.log(campaigns);
+    if (campaigns && users) {
+      const all = concat(campaigns.mobilityCampaigns, users).map((d) => {
+        if (d.creator) {
+          return { type: 'campaign', ts: d.createdAt, ...d };
+        }
+
+        // user + rewards
+        if (d.rewards) {
+          return concat({ type: 'user', ts: d.enabledAt, ...d }, d.rewards.map((r) => ({
+            type: 'reward', ts: d.withdrewAt, ...r, account: d.account
+          })));
+        }
+
+        return { type: 'user', ts: d.enabledAt, ...d };
+      });
+
+      setGraphData(orderBy(flatten(all), ['ts'], ['desc']));
     }
-  }, [campaigns]);
+  }, [campaigns, users]);
 
   return (
     <Grid container spacing={3}>
       {
-        campaigns && (
+        graphData && (
           <div className={classes.feed}>
             <Paper
               className={classes.feedItemMaster}
               elevation={3}
               >
-              <Title>{`Campaigns: ${campaigns.length}`} | {`Users: ${0}`}</Title>
+              <Title>{`Advertisers: ${campaigns.mobilityCampaignOwners.length}`} | {`Campaigns: ${campaigns.mobilityCampaigns.length}`} | {`Users: ${users.length}`}</Title>
             </Paper>
-            <FeedItem data={{ text: '[0x2F56...] received 0.2 ETH in rewards' }} />
-            <FeedItem data={{ text: '[0x12F5...] just signed up! ' }} />
             {
-              campaigns.map((data, idx) => (
-                <FeedItem key={`c-item-${idx}`} data={getItem({ type: 'campaign', data })} />
+              graphData.map((data, idx) => (
+                <FeedItem key={`c-item-${idx}`} data={getItem({ type: data.type, data })} />
               ))
             }
           </div>

@@ -10,7 +10,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Tooltip
+  Tooltip,
+  CircularProgress
 } from '@material-ui/core';
 import Title from './Title';
 
@@ -47,10 +48,12 @@ export default function CreateAd(props) {
   const inputFile = useRef();
   const [inputCategory, setInputCategory] = useState('');
   const [inputBudget, setInputBudget] = useState('');
+  const [spinner, setSpinner] = useState(false);
 
   // NO LONGER USING SPACE DAEMON TO UPLOAD ASSETS
   const createAd = () => new Promise((resolve, reject) => {
     try {
+      setSpinner(true);
       const reader = new FileReader();
       reader.addEventListener('load', async (event) => {
         try {
@@ -80,6 +83,7 @@ export default function CreateAd(props) {
           await threadInstance.updateAdvertiser(inputOrg.current.value, inputCategory)
 
           setOpenModal(false);
+          setSpinner(false);
 
           resolve();
         } catch (error) {
@@ -199,7 +203,13 @@ export default function CreateAd(props) {
                 * Unspent ETH from budget will be refunded at campaign expiration
               </Grid>
               <Grid item xs={4}>
-                 <Button onClick={createAd} style={{ marginTop: 10 }}>Create</Button>
+                 <Button disabled={spinner} onClick={createAd} style={{ marginTop: 10 }}>
+                 {
+                   spinner
+                     ? <CircularProgress style={{ color: '#000000'}} size={32} />
+                     : 'CREATE'
+                 }
+                 </Button>
               </Grid>
             </Grid>
           </Paper>

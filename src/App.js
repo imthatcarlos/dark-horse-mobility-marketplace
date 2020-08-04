@@ -35,26 +35,30 @@ function App(props) {
   useEffect(() => {
     if (web3 === null) {
       const fetchWeb3 = async () => {
-        const web3 = await getWeb3();
-        const contracts = await getContracts(web3);
+        try {
+          const web3 = await getWeb3();
+          const contracts = await getContracts(web3);
 
-        // init thread client
-        const threadService = new ThreadService();
-        await threadService.init();
-        await threadService.start(web3.coinbase);
+          // init thread client
+          const threadService = new ThreadService();
+          await threadService.init();
+          await threadService.start(web3.coinbase);
 
-        setThreadInstance(threadService);
+          setThreadInstance(threadService);
 
-        setMAdsClient(new MobilityAdsClient({
-          web3,
-          account: web3.coinbase,
-          contract: contracts.mobilityCampaigns
-        }));
+          setMAdsClient(new MobilityAdsClient({
+            web3,
+            account: web3.coinbase,
+            contract: contracts.mobilityCampaigns
+          }));
 
-        setWeb3({
-          ...web3,
-          ...contracts
-        });
+          setWeb3({
+            ...web3,
+            ...contracts
+          });
+        } catch (error) {
+          console.log(error);
+        }
       };
 
       fetchWeb3();

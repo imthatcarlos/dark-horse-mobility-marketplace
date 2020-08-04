@@ -70,7 +70,6 @@ export default function Campaigns(props) {
                   <img
                     src={activeCampaign.fileData}
                     width="250px"
-                    height="100%"
                   />
                 </Grid>
                 <Grid item xs={4} md={4} lg={4}>
@@ -97,9 +96,13 @@ export default function Campaigns(props) {
                         <p style={{ textAlign: 'left'}}>
                           impressions: {activeResults.impressions}
                         </p>
-                        <p style={{ textAlign: 'left'}}>
-                          unspent budget: {activeResults.unspent} ETH
-                        </p>
+                        {
+                          /*
+                          <p style={{ textAlign: 'left'}}>
+                            unspent budget: {activeResults.unspent} ETH
+                          </p>
+                          */
+                        }
                         <br />
                         <Button onClick={closeCampaign}>Close Campaign</Button>
                       </div>
