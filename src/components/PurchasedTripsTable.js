@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { saveAs } from 'file-saver';
 import { lighten, makeStyles } from '@material-ui/core/styles';
+import Title from './Title';
 import { getTripContent } from './../utils/fleekStorage';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -182,7 +183,15 @@ export default function PurchasedTripsTable(props) {
   }, [web3, rows]);
 
   if (rows === undefined) {
-    return null;
+    return (
+        <div className={classes.root}>
+            <Paper className={classes.paper}>
+                <Typography variant="h5" gutterBottom component="div">
+                    {"Purchased Datasets will be stored here."}
+                </Typography>
+            </Paper>
+        </div>
+    );
   }
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
