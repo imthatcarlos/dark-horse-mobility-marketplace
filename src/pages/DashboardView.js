@@ -61,6 +61,7 @@ export default function DashboardView(props) {
             <MetaDataTable
               geofence={content.key}
               threadInstance={threadInstance}
+              web3={web3}
             />
           }
         </Grid>

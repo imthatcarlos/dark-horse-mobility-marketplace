@@ -129,6 +129,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     width: '100%',
     marginBottom: theme.spacing(2),
+    padding: theme.spacing(2),
   },
   table: {
     minWidth: 750,
@@ -151,10 +152,10 @@ const handleThreadsResults = (threadsResults) => {
     const url = doc.value.publicUrl;
     const key = url.split("fleek.co/")[1];
     const pieces = key.split('/');
-    return { 
-      geofence: pieces[1], 
-      year: `${pieces[2].split("-")[0]}`, 
-      month: `${pieces[2].split("-")[1]}`, 
+    return {
+      geofence: pieces[1],
+      year: `${pieces[2].split("-")[0]}`,
+      month: `${pieces[2].split("-")[1]}`,
       day: `${pieces[3].split(".")[0]}`
     };
   });
@@ -170,7 +171,7 @@ export default function PurchasedTripsTable(props) {
   const [selectedRow, setSelectedRow] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  
+
   React.useEffect(() => {
     if ( web3 && rows === undefined) {
         const fetchPurchases = async () => {
@@ -237,7 +238,7 @@ export default function PurchasedTripsTable(props) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar 
+        <EnhancedTableToolbar
             numSelected={selected.length}
             row={selectedRow}
              />

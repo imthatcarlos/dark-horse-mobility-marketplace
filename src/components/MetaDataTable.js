@@ -13,15 +13,18 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress'
 import { Button } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
+const COST_DATASET_ETH = 0.1;
+const MERCHANT_ETH_ADDRESS = '0x28ff8e457feF9870B9d1529FE68Fbb95C3181f64';
 
 const computeMeta = async (fileKey) => {
   const content = await getTripContent(fileKey);
-  
+
   var result = inflate(content.data, { to: 'text' });
   var string = new TextDecoder("utf-8").decode(result);
   var json = JSON.parse(string);
@@ -55,17 +58,29 @@ const useRowStyles = makeStyles({
   },
 });
 
-
-const handleClick = async (publicUrl, threadInstance) => {
-  // Call function to handle the transaction 
-  const txHash="egereoerjnejnoe";
-  await threadInstance.initPurchases(txHash, publicUrl);
-};
-
 function Row(props) {
-  const { row, threadInstance } = props;
+  const { row, threadInstance, web3 } = props;
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
+  const [spinner, setSpinner] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState({});
+
+  const handleClick = async (publicUrl) => {
+    setSpinner(true);
+
+    // Call function to handle the transaction
+    const res = await web3.eth.sendTransaction({
+      from: web3.coinbase,
+      to: MERCHANT_ETH_ADDRESS,
+      value: web3.utils.toWei(COST_DATASET_ETH.toString())
+    });
+
+    console.log(`txHash => ${res.transactionHash}`);
+
+    await threadInstance.initPurchases(res.transactionHash, publicUrl);
+
+    setSpinner(false);
+  };
 
   return (
     <React.Fragment>
@@ -85,9 +100,13 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Typography variant="h6" gutterBottom component="div">
-                <Button onClick={async () => await handleClick(row.meta.url, threadInstance)}>
-                  Purchase
-                  </Button>
+                <Button disabled={spinner} onClick={() => handleClick(row.meta.url)}>
+                  {
+                    spinner
+                      ? <CircularProgress style={{ color: '#000000'}} size={32} />
+                      : `Purchase for ${COST_DATASET_ETH} ETH`
+                  }
+                </Button>
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
@@ -125,7 +144,7 @@ const handleTrips = async (geofence) => {
 };
 
 export default function MetaDataTable(props) {
-  const { geofence, threadInstance } = props;
+  const { geofence, threadInstance, web3 } = props;
   const [tripsData, setTripsData] = React.useState();
 
   React.useEffect(() => {
@@ -153,10 +172,11 @@ export default function MetaDataTable(props) {
         </TableHead>
         <TableBody>
           {tripsData.map((row, idx) => (
-            <Row 
-            key={idx} 
-            row={row} 
-            threadInstance={threadInstance}
+            <Row
+              key={idx}
+              row={row}
+              threadInstance={threadInstance}
+              web3={web3}
             />
           ))}
         </TableBody>

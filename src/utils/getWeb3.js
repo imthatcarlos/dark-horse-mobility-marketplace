@@ -44,7 +44,7 @@ export const getWeb3 = () => new Promise((resolve, reject) => {
         // User denied account access...
         reject();
       }
-    } else if (process.env.NODE_ENV !== 'development' && window.web3) {
+    } else if (window.web3) {
       // Use Mist/MetaMask's provider.
       web3 = new Web3(window.web3.currentProvider);
 
