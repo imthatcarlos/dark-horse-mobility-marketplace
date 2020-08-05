@@ -45,6 +45,36 @@ export const listFiles = async () => {
   }, {});
 };
 
+export const listTrips = async (selectedGeofence=null) => {
+  if (selectedGeofence) {
+    var datasets = (await files()).filter((f) => f.key.startsWith(DATA_DIRECTORY) && !f.key.includes('.keep') && f.key.includes(selectedGeofence));
+  } else {
+    var datasets = (await files()).filter((f) => f.key.startsWith(DATA_DIRECTORY) && !f.key.includes('.keep'));
+  }
+  const keys = datasets.map((f) => f.key);
+  const res = keys.map((key, idx) => {
+    const pieces = key.split('/');
+    return { 
+      geofence: pieces[1], 
+      year: `${pieces[2].split("-")[0]}`, 
+      month: `${pieces[2].split("-")[1]}`, 
+      day: `${pieces[3].split(".")[0]}`
+    };
+  });
+  return res;
+};
+
+export const getTripContent = async (fileKey) => {
+  const tripContent = await fleekStorage.get({
+    apiKey: REACT_APP_FLEEK_API_KEY,
+    apiSecret: REACT_APP_FLEEK_API_SECRET,
+    bucket: BUCKET,
+    key: fileKey,
+    getOptions: ['data', 'publicUrl'],
+  });
+  return tripContent; 
+};
+
 export const getMedia = (keys) => Promise.all(keys.map((k) => new Promise(async (resolve, reject) => {
   const data = await fleekStorage.get({
     apiKey: REACT_APP_FLEEK_API_KEY,
