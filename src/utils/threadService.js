@@ -295,7 +295,7 @@ class ThreadService {
       return [];
     }
   };
-  
+
   async queryAdvertisers (ethAddr) {
     const query = {
       ethAddr: ethAddr
